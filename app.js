@@ -3,10 +3,18 @@ const fs = require("fs");
 
 const app = express();
 
+const STORAGE_DIRECTORY = "storage" ;
 const STORAGE_FILE_NAME = "items" ;
+const STORAGE_FILE_PATH = STORAGE_DIRECTORY + "/" + STORAGE_FILE_NAME ;
+const STORAGE_WORK_FILE_NAME = "work-items" ;
+const STORAGE_WORK_FILE_PATH = STORAGE_DIRECTORY + "/" + STORAGE_WORK_FILE_NAME ;
 const SPLIT_CARACTER = "\n" ;
 
+const WORK_LIST_TITLE = "work"
+
+
 let items = [];
+let workItems = [];
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended : true}));
@@ -18,9 +26,17 @@ app.post("/", (req, res) => {
         flag : "a"
     };
 
-    fs.writeFileSync(STORAGE_FILE_NAME, item, options);
+    if(req.body.list === WORK_LIST_TITLE){
+        fs.writeFileSync(STORAGE_WORK_FILE_PATH, item, options);
 
-    res.redirect("/");
+        res.redirect("/work");
+    }else{
+        fs.writeFileSync(STORAGE_FILE_PATH, item, options);
+
+        res.redirect("/");
+    }
+
+    
 })
 
 app.get("/", (req, res) => {
@@ -34,10 +50,17 @@ app.get("/", (req, res) => {
 
     let day = today.toLocaleDateString("fr-FR", options);
 
-    items = fs.readFileSync(STORAGE_FILE_NAME).toString().split(SPLIT_CARACTER);
+    items = fs.readFileSync(STORAGE_FILE_PATH).toString().split(SPLIT_CARACTER);
 
-    res.render("list", {day : day, items : items});
+    res.render("list", {listTitle : day, items : items});
 })
+
+app.get("/work", (req, res) => {
+    workItems = fs.readFileSync(STORAGE_WORK_FILE_PATH).toString().split(SPLIT_CARACTER);
+
+    res.render("list", {listTitle : WORK_LIST_TITLE, items : workItems});
+})
+
 
 app.listen(3000, () => {
     console.log("Server running on port 3000");
