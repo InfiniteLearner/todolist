@@ -10,7 +10,20 @@
     </head>
     <body>
        
-        <h1>It's a <%= day %></h1>
+       
+        <h1><%= day %></h1>
+    
+        <ul>
+            <% for(let i=0 ; i < items.length ; i++){ %>
+                <li><%= items[i] %></li>    
+            <% } %>
+        </ul>
+
+        <form action="/" method="post">
+            <label>New item : </label>
+            <input type="text" name="newItem" placeholder="Name of item">
+            <button type="submit">Add item</button>
+        </form>
         
         <script src="" async defer></script>
     </body>
