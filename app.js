@@ -6,14 +6,15 @@ const app = express();
 const STORAGE_FILE_NAME = "items" ;
 const SPLIT_CARACTER = "\n" ;
 
-var items = [];
+let items = [];
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended : true}));
+app.use(express.static("public"));
 
 app.post("/", (req, res) => {
-    var item = SPLIT_CARACTER + req.body.newItem ;
-    var options = {
+    let item = SPLIT_CARACTER + req.body.newItem ;
+    let options = {
         flag : "a"
     };
 
@@ -23,15 +24,15 @@ app.post("/", (req, res) => {
 })
 
 app.get("/", (req, res) => {
-    var today = new Date();
+    let today = new Date();
 
-    var options = {
+    let options = {
         weekday : "long",
         day : "numeric",
         month : "long"
     };
 
-    var day = today.toLocaleDateString("fr-FR", options);
+    let day = today.toLocaleDateString("fr-FR", options);
 
     items = fs.readFileSync(STORAGE_FILE_NAME).toString().split(SPLIT_CARACTER);
 
