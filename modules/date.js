@@ -1,4 +1,4 @@
-exports.getDate = () => {
+ const getDate = () => {
     const today = new Date();
 
     const options = {
@@ -10,7 +10,7 @@ exports.getDate = () => {
     return today.toLocaleDateString("fr-FR", options);
 }
 
-exports.getDay = () => {
+const getDay = () => {
     const today = new Date();
 
     const options = {
@@ -19,3 +19,5 @@ exports.getDay = () => {
 
     return today.toLocaleDateString("fr-FR", options);
 }
+
+export {getDate, getDay};
