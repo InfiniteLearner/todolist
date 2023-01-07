@@ -15,7 +15,7 @@
     </form>
    
 
-    <form class="item" action="/" method="post">
+    <form class="item" action="/list/<%= category %>" method="post">
         <input type="text" name="newItem" placeholder="New item" autocomplete="off" required>
         <button type="submit" name="list" value="<%= listTitle %>">+</button>
     </form>
