@@ -82,6 +82,21 @@ app.post("/", (req: Request, res: Response) => {
     });
 })
 
+app.post("/delete", (req: Request, res: Response) => {
+    const id : string = req.body.checkbox ;
+    console.log("DELETE request for " + id);
+
+    Item.findByIdAndDelete({_id: id}, (err: CallbackError, item: IItem) => {
+        if(err){
+            throw err ;
+        }else{
+            const redirectPath : string = (item.category === Category.Work) ? "/" + Category.Work.toLocaleLowerCase() : "/" ;
+            res.redirect(redirectPath);
+
+        }
+    });
+})
+
 /*--------------*/
 
 /* GET */
@@ -112,9 +127,13 @@ function findAndRender(title: string, category: Category, res: Response): void{
         }else{
             console.log(category + " items have been successfuly loaded");
             console.log("Rendering items...");
-            res.render("list", {listTitle : title, items : items.map(item => item.description)});
+            res.render("list", {listTitle : title, items : items});
         }
     })
+}
+
+function deleteItem(item: string){
+    console.log(item);
 }
 
 /*--------------*/

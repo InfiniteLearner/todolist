@@ -21,7 +21,8 @@
     "allowJs": true,
     "declaration": false,
     "noImplicitReturns": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "watch": true
   },
   "include": ["src/**/*"],
   "exclude": ["nodes_modules/**/*"]
