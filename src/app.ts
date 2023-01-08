@@ -1,12 +1,22 @@
-import express, {Express, Request, Response } from "express";
+import express, {Express, Request, Response, urlencoded } from "express";
 import mongoose, { CallbackError, Document, model, Schema } from "mongoose";
-import {getDate} from "../modules/date.js";
 import _ from "lodash" ;
+import * as dotenv from "dotenv" ;
+
+import {getDate} from "../modules/date.js";
+
+
+dotenv.config();
+
+const username = encodeURIComponent(process.env.DB_USER!);
+const password = encodeURIComponent(process.env.DB_PASSWORD!);
+const cluster = process.env.CLUSTER! ;
+const uri = `mongodb+srv://${username}:${password}@${cluster}/?retryWrites=true&w=majority`;
 
 /* Set up app and db */
 
 mongoose.set('strictQuery', false);
-mongoose.connect("mongodb://127.0.0.1:27017/todolistDB");
+mongoose.connect(uri);
 
 console.log("Connect to the database todolistDB");
 
