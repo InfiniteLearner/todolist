@@ -1,6 +1,7 @@
 import express, {Express, Request, Response } from "express";
 import mongoose, { CallbackError, Document, model, Schema } from "mongoose";
 import {getDate} from "../modules/date.js";
+import _ from "lodash" ;
 
 /* Set up app and db */
 
@@ -67,10 +68,14 @@ app.post("/list/:category", (req: Request, res: Response) => {
     console.log("POST request");
 
     const item : string = req.body.newItem ;
+    const category : string = _.capitalize(req.params.category) ;
+
+    
+    
     //if this is the default list, we discard the title of the list
-    const category : string = req.params.category ;
+    let redirectPath : string = (category === _.capitalize(DEFAULT_CATEGORY)) ? "/" : "/list/" + category ;
+
     console.log("Creating item");
-    let redirectPath : string = (category === DEFAULT_CATEGORY) ? "/" : "/list/" + category ;
     let mongooseItem: Document<unknown, any, IItem> & IItem = new Item({category: category, description: item});
 
     List.findOne({name: category}, (err : CallbackError, list: Document<unknown, any, IList> & IList) => {
@@ -129,28 +134,16 @@ app.post("/delete", (req: Request, res: Response) => {
         }
         else{
             console.log("Deleting in list");
-            List.findOne({"items.description": item.description}, (err: CallbackError, list: Document<unknown, any, IList> & IList) => {
+            List.findOneAndUpdate({"items.description": item.description}, {$pull: {items: {description : item.description}}}, (err: CallbackError, list: Document<unknown, any, IList> & IList) => {
                 if(err){
                     console.log(err); 
                     throw err; ;
                 }else if(!list){
                     throw new Error("The item was not in any list : " + item.description);
                 }else{
-                    list.items = list.items.filter(it => it.description !== item.description);
-
-                    list.save((err: CallbackError, savedList: IList) => {
-                        if(err){
-                            console.log(err); 
-                            throw err; ;
-                        }else if(list !== savedList){
-                            throw new Error("List hasn't been saved : " + savedList.name);
-                        }else{
-                           console.log("List updated");
-                           const redirectPath = (list.name === DEFAULT_CATEGORY) ? "/" : "/list/" + list.name ;
-                           res.redirect(redirectPath);
-                        }
-                    })
-                   
+                    console.log("List updated");
+                    const redirectPath = (list.name === _.capitalize(DEFAULT_CATEGORY)) ? "/" : "/list/" + list.name ;
+                    res.redirect(redirectPath);
                 }
             })
         }
@@ -167,11 +160,11 @@ app.get("/", (req: Request, res: Response) => {
     const day : string = getDate();
 
 
-    findAndRender(day, DEFAULT_CATEGORY, res);
+    findAndRender(day, _.capitalize(DEFAULT_CATEGORY), res);
 })
 
 app.get("/list/:category", (req: Request, res: Response) => {
-    const category: string = req.params.category;
+    const category: string = _.capitalize(req.params.category);
     console.log("GET request at /" + category);
 
     findAndRender(category, category, res);
